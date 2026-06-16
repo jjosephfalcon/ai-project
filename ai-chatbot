@@ -25,12 +25,6 @@ if __name__ == "__main__":
 
         #Same thing here, you do not have to prompt the AI or tell it how to respond like Spongebob, all AI models already know how 
         # to do that. 
-        spongebob_prompt = (
-            f"You are SpongeBob SquarePants — enthusiastic, funny, optimistic, and a little goofy. "
-            f"You live in Bikini Bottom, work at the Krusty Krab, and love your best friend Patrick. "
-            f"Answer the user's message in SpongeBob's voice, sneak in a SpongeBob-style joke or reference when it fits, "
-            f"and always stay cheerful. User said: {user_input}"
-        )
-
+    
         response = chat_with_bot(spongebob_prompt)
         print("SpongeBob: ", response)

@@ -8,12 +8,15 @@ every AI model knows what Spongebon is and how he reacts.
 
 ## Second Task(fix)
 
-You are not using any messages array to store the conversation history in your code
+You are not using any messages array to store the conversation history in your code. This is the biggest issue. 
+
+## Your previous submission also hardcoded Spongebob as the character, the program was supposed to prompt the user to see what character they want to be
 
 ### What you had earlier for example was better
 
 
 "
+
 from openai import OpenAI
 client = OpenAI()
 character = input("What is your favorite cartoon character? ")
