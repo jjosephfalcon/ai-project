@@ -1,40 +1,21 @@
-# HOW TO RUN THIS CHATBOT:
-# 1. Set your Groq API key in the terminal:
-#       Windows PowerShell:  $env:GROQ_API_KEY = "your-key-here"
-#       Mac/Linux terminal:  export GROQ_API_KEY="your-key-here"
-# 2. Run this file:
-#       python ai-chatbot
-# 3. Type your message and press Enter to chat. Type "quit" to exit.
 
-# Import os to read environment variables from your machine
 import os
-
-# Import the Groq client library to talk to the Groq API
 from groq import Groq
 
-# Create a Groq client using your API key stored in the GROQ_API_KEY environment variable
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 
-# Define a function that sends a user message to Groq and returns the reply
 def chat_with_bot(prompt):
-    # Send the message to Groq and store the response
     response = client.chat.completions.create(
-        # Specify the model to use — llama-3.3-70b is fast and capable on Groq
         model="llama-3.3-70b-versatile",
-        # Pass the user's message in the format the API expects
         messages=[{"role": "user", "content": prompt}]
     )
-    # Extract and return the text reply, removing extra whitespace
     return response.choices[0].message.content.strip()
 
-
-# Only run the chat loop when this file is executed directly
 if __name__ == "__main__":
+    #FIX: Get rid of all of these, there is no reason to tell or print manual lines of what spongebob should say, the 
+    #whole point of the AI project is to use teh AI to do it so our code looks clean, get rid of all of these print lines or only use 1
     print("Hello! This is SpongeBob SquarePants! Are ya ready, kids?!")
-    print("I live in a pineapple under the sea and I am here to chat!")
-    print("Joke of the day: Why did Patrick go to school? Because he wanted to be a little SHARPER! Ha!")
-    print("Type 'quit' to leave Bikini Bottom.\n")
 
     while True:
         user_input = input("You: ")
@@ -42,7 +23,8 @@ if __name__ == "__main__":
             print("SpongeBob: Goodbye! I'm ready, I'm ready, I'm ready... to miss you!")
             break
 
-        # Add SpongeBob personality to every prompt
+        #Same thing here, you do not have to prompt the AI or tell it how to respond like Spongebob, all AI models already know how 
+        # to do that. 
         spongebob_prompt = (
             f"You are SpongeBob SquarePants — enthusiastic, funny, optimistic, and a little goofy. "
             f"You live in Bikini Bottom, work at the Krusty Krab, and love your best friend Patrick. "
