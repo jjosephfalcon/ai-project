@@ -1,54 +1,99 @@
-# HOW TO RUN THIS CHATBOT:
-# 1. Set your Groq API key in the terminal:
-#       Windows PowerShell:  $env:GROQ_API_KEY = "your-key-here"
-#       Mac/Linux terminal:  export GROQ_API_KEY="your-key-here"
-# 2. Run this file:
-#       python ai-chatbot
-# 3. Type your message and press Enter to chat. Type "quit" to exit.
-
-# Import os to read environment variables from your machine
 import os
+# lets you access stuff from your computer's environment, like secret keys
 
-# Import the Groq client library to talk to the Groq API
+import json
+# lets you convert python lists/dicts into a file format and read them back
+
 from groq import Groq
+# pulls in the Groq library so you can talk to the AI model
 
-# Create a Groq client using your API key stored in the GROQ_API_KEY environment variable
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+# creates a connection to Groq using your API key stored as an environment variable
+# os.environ.get("GROQ_API_KEY") reads that key without you hardcoding it in the file
 
 
-# Define a function that sends a user message to Groq and returns the reply
-def chat_with_bot(prompt):
-    # Send the message to Groq and store the response
+def chat_with_bot(history):
+# defines a function that sends the conversation history to the AI and gets a reply
+
     response = client.chat.completions.create(
-        # Specify the model to use — llama-3.3-70b is fast and capable on Groq
+    # calls the Groq API to generate a response
+
         model="llama-3.3-70b-versatile",
-        # Pass the user's message in the format the API expects
-        messages=[{"role": "user", "content": prompt}]
+        # tells Groq which AI model to use
+
+        messages=history
+        # passes the full conversation so the AI knows what was said before
     )
-    # Extract and return the text reply, removing extra whitespace
+
     return response.choices[0].message.content.strip()
+    # pulls out the actual text of the reply and removes any extra whitespace
 
 
-# Only run the chat loop when this file is executed directly
+def load_history(path="history.json"):
+# defines a function that loads past conversation from a file
+# path="history.json" is the default file it looks for
+
+    if os.path.exists(path):
+    # checks if that file actually exists on your computer
+
+        with open(path, "r") as f:
+        # opens the file in read mode
+
+            return json.load(f)
+            # converts the file contents back into a python list and returns it
+
+    return [{"role": "system", "content": "You are SpongeBob SquarePants. Stay in character at all times."}]
+    # if no file exists yet, returns a fresh list with just the system prompt to start clean
+
+
+def save_history(history, path="history.json"):
+# defines a function that saves the current conversation to a file
+
+    with open(path, "w") as f:
+    # opens (or creates) history.json in write mode
+
+        json.dump(history, f)
+        # converts the python list into JSON and writes it into the file
+
+
 if __name__ == "__main__":
-    print("Hello! This is SpongeBob SquarePants! Are ya ready, kids?!")
-    print("I live in a pineapple under the sea and I am here to chat!")
-    print("Joke of the day: Why did Patrick go to school? Because he wanted to be a little SHARPER! Ha!")
-    print("Type 'quit' to leave Bikini Bottom.\n")
+# this makes sure the chat loop only runs when you execute this file directly
+# (not if another file imports it)
+
+    print("SpongeBob: Are ya ready? Type 'quit' to exit.\n")
+    # prints the opening message when you start the chatbot
+
+    conversation_history = load_history()
+    # loads the saved history from disk so the bot remembers past sessions
+    # if no history exists yet, load_history() returns the fresh starting list
 
     while True:
+    # keeps the chat going forever until you break out of the loop
+
         user_input = input("You: ")
+        # waits for you to type something and stores it
+
         if user_input.lower() == "quit":
+        # checks if you typed "quit" (case insensitive)
+
             print("SpongeBob: Goodbye! I'm ready, I'm ready, I'm ready... to miss you!")
+            # prints a goodbye message
+
             break
+            # exits the while loop and ends the program
 
-        # Add SpongeBob personality to every prompt
-        spongebob_prompt = (
-            f"You are SpongeBob SquarePants — enthusiastic, funny, optimistic, and a little goofy. "
-            f"You live in Bikini Bottom, work at the Krusty Krab, and love your best friend Patrick. "
-            f"Answer the user's message in SpongeBob's voice, sneak in a SpongeBob-style joke or reference when it fits, "
-            f"and always stay cheerful. User said: {user_input}"
-        )
+        conversation_history.append({"role": "user", "content": user_input})
+        # adds your message to the conversation list so the AI knows what you said
 
-        response = chat_with_bot(spongebob_prompt)
+        response = chat_with_bot(conversation_history)
+        # sends the full conversation to the AI and gets its reply
+
+        conversation_history.append({"role": "assistant", "content": response})
+        # adds the AI's reply to the conversation list so it remembers what it said
+
+        save_history(conversation_history)
+        # writes the updated conversation to history.json right away
+        # doing it here means even if you force-quit, the last message is still saved
+
         print("SpongeBob: ", response)
+        # prints the AI's reply to the screen
