@@ -1,0 +1,26 @@
+import json
+import time
+
+tasks = []
+
+def main():
+    print("Student Productivity Toolkit")
+    
+    while True:
+        print("\nMain Menu")
+        print("1. Homework Manager")
+        print("2. Study Timer")
+        print("3. Note Organizer")
+        print("4. Exit")
+        choice = input("Select an option: ") 
+        if choice == '1':
+            homework_manager()
+        elif choice == '2':
+            study_timer()
+        elif choice == '3':
+            note_organizer()
+        elif choice == '4':
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid option. Please try again.")

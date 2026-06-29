@@ -1,100 +1,37 @@
 import os
 print(os.environ.get("GROQ_API_KEY"))
-# lets you access stuff from your computer's environment, like secret keys
-
 import json
-# lets you convert python lists/dicts into a file format and read them back
-
 from groq import Groq
-# pulls in the Groq library so you can talk to the AI model
-
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-# creates a connection to Groq using your API key stored as an environment variable
-# os.environ.get("GROQ_API_KEY") reads that key without you hardcoding it in the file
-
 
 def chat_with_bot(history):
-# defines a function that sends the conversation history to the AI and gets a reply
-
-    response = client.chat.completions.create(
-    # calls the Groq API to generate a response
-
+    response = client.chat.completions.create(\
         model="llama-3.3-70b-versatile",
-        # tells Groq which AI model to use
-
         messages=history
-        # passes the full conversation so the AI knows what was said before
     )
-
     return response.choices[0].message.content.strip()
-    # pulls out the actual text of the reply and removes any extra whitespace
-
-
 def load_history(path="history.json"):
-# defines a function that loads past conversation from a file
-# path="history.json" is the default file it looks for
 
     if os.path.exists(path):
-    # checks if that file actually exists on your computer
-
         with open(path, "r") as f:
-        # opens the file in read mode
-
             return json.load(f)
-            # converts the file contents back into a python list and returns it
-
     return [{"role": "system", "content": "You are SpongeBob SquarePants. Stay in character at all times."}]
-    # if no file exists yet, returns a fresh list with just the system prompt to start clean
-
 
 def save_history(history, path="history.json"):
-# defines a function that saves the current conversation to a file
-
     with open(path, "w") as f:
-    # opens (or creates) history.json in write mode
-
         json.dump(history, f)
-        # converts the python list into JSON and writes it into the file
-
 
 if __name__ == "__main__":
-# this makes sure the chat loop only runs when you execute this file directly
-# (not if another file imports it)
 
     print("SpongeBob: Are ya ready? Type 'quit' to exit.\n")
-    # prints the opening message when you start the chatbot
-
     conversation_history = load_history()
-    # loads the saved history from disk so the bot remembers past sessions
-    # if no history exists yet, load_history() returns the fresh starting list
-
     while True:
-    # keeps the chat going forever until you break out of the loop
-
         user_input = input("You: ")
-        # waits for you to type something and stores it
-
         if user_input.lower() == "quit":
-        # checks if you typed "quit" (case insensitive)
-
             print("SpongeBob: Goodbye! I'm ready, I'm ready, I'm ready... to miss you!")
-            # prints a goodbye message
-
             break
-            # exits the while loop and ends the program
-
         conversation_history.append({"role": "user", "content": user_input})
-        # adds your message to the conversation list so the AI knows what you said
-
         response = chat_with_bot(conversation_history)
-        # sends the full conversation to the AI and gets its reply
-
         conversation_history.append({"role": "assistant", "content": response})
-        # adds the AI's reply to the conversation list so it remembers what it said
-
         save_history(conversation_history)
-        # writes the updated conversation to history.json right away
-        # doing it here means even if you force-quit, the last message is still saved
-
         print("SpongeBob: ", response)
-        # prints the AI's reply to the screen
