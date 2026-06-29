@@ -1,4 +1,5 @@
 import os
+print(os.environ.get("GROQ_API_KEY"))
 # lets you access stuff from your computer's environment, like secret keys
 
 import json
